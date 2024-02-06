@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>three.js学习之纹理贴图Texture</title>
+    <meta name="keywords" content="three.js MeshLambertMaterial demo,three.js MeshLambertMaterial 案例">
+    <meta name="description" content="three.js MeshLambertMaterial具体用法的demo教程，完整示例。">
+    <meta charset="utf8" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.min.js"></script>
+    <style>
+
+        #three {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="three"></canvas>
+    <script>
+        function getSearchObj(key) {
+            const search = window.location.search.replace('?', '')
+            const list = search.split('&')
+            const obj = {}
+            for (let i = 0; i < list.length; i++) {
+                const eachList = list[i].split('=')
+                obj[eachList[0]] = eachList[1]
+            }
+            return obj[key]
+        }
+        async function main() {
+            const search = location.search
+            const canvas = document.querySelector('#three')
+            const renderer = new THREE.WebGLRenderer({ canvas })
+            const fov = 75;
+            const aspect = 2;
+            const near = 0.1;
+            const far = 200;
+
+            const camera = new THREE.PerspectiveCamera(fov, aspect, near, far)
+
+            const group = new THREE.Group()
+            group.position.z = -10
+            const lineMaterial = new THREE.LineBasicMaterial({ color: 0xffffff, linecap: 'round' })
+            const loader = new THREE.TextureLoader()
+            const load = (url) => {
+                return new Promise((resolve, reject) => {
+                    loader.load('faces/bell_side.png', (texture) => {
+                        resolve(texture)
+                    })
+                })
+            }
+            {
+                const width = 4
+                const height = 4
+                const depth = 4
+                const boxGeometry = new THREE.BoxGeometry(width, height, depth)
+                const texture = await load('faces/bell_side.png')
+
+                if (getSearchObj('repeat') === 'true') {
+                    texture.wrapT = THREE.MirroredRepeatWrapping
+                    texture.wrapS = THREE.MirroredRepeatWrapping
+                    texture.repeat.y = 2
+                    texture.repeat.x = 2
+                }
+
+                if (getSearchObj('rotation') === 'true') {
+                    texture.wrapT = THREE.MirroredRepeatWrapping
+                    texture.wrapS = THREE.MirroredRepeatWrapping
+                    texture.rotation = 0.1 * Math.PI
+                }
+
+                const material = new THREE.MeshBasicMaterial({
+                    color: 0x00E5EE,
+                    // map: texture
+                })
+
+                const box = new THREE.Mesh(boxGeometry, material)
+                if (search.includes('box') || !search) {
+                    group.add(box)
+                }
+            }
+
+            {
+                const width = 4
+                const height = 4
+                const depth = 4
+                const boxGeometry = new THREE.BoxGeometry(width, height, depth)
+
+                const materials = [
+                    new THREE.MeshBasicMaterial({
+                        map: loader.load('faces/bee_1.png')
+                    }),
+                    new THREE.MeshBasicMaterial({
+                        map: loader.load('faces/bee_2.png')
+                    }),
+                    new THREE.MeshBasicMaterial({
+                        map: loader.load('faces/bee_3.png')
+                    }),
+                    new THREE.MeshBasicMaterial({
+                        map: loader.load('faces/bee_4.png')
+                    }),
+                    new THREE.MeshBasicMaterial({
+                        map: loader.load('faces/bee_5.png')
+                    }),
+                    new THREE.MeshBasicMaterial({
+                        map: loader.load('faces/bee_6.png')
+                    })
+                ]
+
+                const box = new THREE.Mesh(boxGeometry, materials)
+                box.position.x = 6
+                if (search.includes('boxMutipla') || !search) {
+                    if (search.includes('boxMutipla')) {
+                        box.position.x = 0
+                    }
+                    group.add(box)
+                }
+            }
+
+            const scene = new THREE.Scene()
+
+            {
+                const lightColor = 0xffffff; // 灯光颜色
+                const intensity = 1; // 灯光强度
+                const light = new THREE.DirectionalLight(lightColor, intensity);
+                light.position.set(-1, 2, 4);
+                scene.add(light);
+            }
+            scene.add(group)
+
+            function resizeRenderSizeToDisplaySize() {
+                const pixelRatio = window.devicePixelRatio;
+                const displayWidth = canvas.clientWidth * pixelRatio
+                const displayHeight = canvas.clientHeight * pixelRatio
+                const renderWidth = canvas.width;
+                const renderHeight = canvas.height;
+                const needResize = displayWidth !== renderWidth || displayHeight !== renderHeight
+                return needResize
+            }
+            function render(time=1000) {
+                // console.log({time});
+                if (resizeRenderSizeToDisplaySize()) {
+                    const pixelRatio = window.devicePixelRatio;
+                    const width = canvas.clientWidth * pixelRatio
+                    const height = canvas.clientHeight * pixelRatio
+                    renderer.setSize(width, height, false)
+                    camera.aspect = canvas.clientWidth / canvas.clientHeight;
+                    camera.updateProjectionMatrix();
+                }
+
+                time *= 0.001;
+    
+                group['children'].forEach((each, index) => {
+                    each.rotation.x = -time
+                    each.rotation.y = -time
+                })
+
+                // group.position.y = time
+                // group.position.x = time 
+                renderer.render(scene, camera)
+                requestAnimationFrame(render)
+            }
+            requestAnimationFrame(render)
+            // render()
+        }
+        main()
+    </script>
+</body>
+
+</html>
