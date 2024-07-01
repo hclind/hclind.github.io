@@ -6,7 +6,9 @@
     <title>Document</title>
     <script>
         let urlParams = new URLSearchParams(window.location.search);
-        console.log(urlParams.get('p'));
+        let pid = urlParams.get('p');
+        const poems = ["春宮曲","TEST"]
+        if (pid !==null) window.location.href = `google.com/search?q=${poems[parseInt(pid)]}`;
     </script>
 </head>
 <body>
