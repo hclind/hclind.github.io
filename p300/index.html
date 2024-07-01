@@ -7,7 +7,7 @@
     <script>
         let urlParams = new URLSearchParams(window.location.search);
         let pid = urlParams.get('p');
-        const poems = ["春宮曲","TEST","test2"];
+        const poems = [ '登幽州臺歌', '春宮曲', '杜少府之任蜀州', '登鸛鵲樓', '石魚湖上醉歌并序', '遣悲懷三首之一', '賊退示官吏并序']
         if (pid !==null) window.location.href = `https://google.com/search?q=${poems[parseInt(pid)]}`;
     </script>
 </head>
