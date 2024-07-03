@@ -12,6 +12,7 @@ let poems = JSON.parse((0, fs_1.readFileSync)('./public/唐詩三百首.json').t
 //     {"詩名":"登鸛鵲樓","作者":"王之渙","詩體":"五言絕句","詩文":"白日依山盡，黃河入海流。欲窮千里目，更上一層樓。"},
 //     {"詩名":"石魚湖上醉歌并序","作者":"元結","詩體":"七言古詩","詩文":"石魚湖，似洞庭，夏水欲滿君山青。山為樽，水為沼，酒徒歷歷坐洲鳥。長風連日作大浪，不能廢人運酒舫。我持長瓢坐巴邱，酌飲四座以散愁。"},
 //     {"詩名":"遣悲懷三首之一","作者":"元稹","詩體":"七言律詩","詩文":"謝公最小偏憐女，自嫁黔婁百事乖。顧我無衣搜藎篋，泥他沽酒拔金釵。野蔬充膳甘長藿，落葉添薪仰古槐。今日俸錢過十萬，與君營奠復營齋。"},
+//     {"詩名":"賊退示官吏并序","作者":"元結","詩體":"五言古詩","詩文":"昔歲逢太平，山林二十年。泉源在庭戶，洞壑當門前。井稅有常期，日晏猶得眠。忽然遭世變，數歲親戎旃。今來典斯郡，山夷又紛然。城小賊不屠，人貧傷可憐。是以陷鄰境，此州獨得全。使臣將王命，豈不如賊焉。"},
 //     {"詩名":"賊退示官吏并序","作者":"元結","詩體":"五言古詩","詩文":"昔歲逢太平，山林二十年。泉源在庭戶，洞壑當門前。井稅有常期，日晏猶得眠。忽然遭世變，數歲親戎旃。今來典斯郡，山夷又紛然。城小賊不屠，人貧傷可憐。是以陷鄰境，此州獨得全。使臣將王命，豈不如賊焉。令彼徵歛者，迫之如火煎。誰能絕人命，以作時世賢。思欲委符節，引竿自刺船。將家就魚麥，歸老江湖邊。"}
 // ];    
 function drawpoem20(poem) {
@@ -41,10 +42,10 @@ function drawpoem28(poem) {
     if (str[0] == '(')
         str = str.split(')')[1];
     qi.verticalprintln(`${poem.詩名} ${poem.作者} 28`, 8, 4, { name: '繁體', size: 14, color: 'black' });
-    let fs = 32;
+    let fs = 30;
     qi.setFonts({ name: '繁體', size: fs, color: 'black' });
     for (let i = 0; i < 4; i++)
-        qi.verticalprint(str.substring(i * 8, i * 8 + 7), 36 + fs * i * 1.05, 20);
+        qi.verticalprint(str.substring(i * 8, i * 8 + 7), 40 + fs * i * 1.05, 20);
     return 28;
 }
 function drawpoem56(poem) {
@@ -70,12 +71,12 @@ function drawpoem(poem) {
         default: break;
     }
     qi.verticalprintln(`${poem.詩名} ${poem.作者}`, 4, 4, { name: '繁體', size: 14, color: 'black' });
-    let fs = Math.floor(Math.sqrt((qi.dim.h - 12) * (qi.dim.w - 2) / str.length)) - 2;
+    let fs = Math.floor(Math.sqrt((qi.dim.h - 2) * (qi.dim.w - 16) / str.length)) - 2;
     if (fs * (fs + 1) * str.length > (qi.dim.h - 12) * (qi.dim.w - 2))
         fs -= 1;
-    fs = Math.min(fs, 34);
+    fs = Math.min(fs, 32);
     qi.setFonts({ name: '繁體', size: fs, color: 'black' });
-    let maxChar = Math.floor((qi.dim.h - 2) / fs);
+    let maxChar = Math.floor((qi.dim.h - 10) / fs);
     qi.margin = Math.floor((qi.dim.h - maxChar * fs) / 2);
     qi.cursor.y = qi.margin;
     qi.cursor.x += 2;
@@ -90,10 +91,12 @@ async function test() {
         qi.clear();
         let rr = drawpoem(poems[i]);
         qi.canvas2data().quantize();
-        if (rr === 0)
-            qi.qrDraw(`https://hclind.github.io/p300/?p=${i}`, 30, 260, "L", 1, true);
+        if (rr === 0) {
+            if (poems[i].詩文.length < 98)
+                qi.qrDraw(`https://hclind.github.io/p300/?p=${i}`, 34, 256, "M", 1, true);
+        }
         else
-            qi.qrDraw(`https://hclind.github.io/p300/?p=${i}`, 172, 260, "L", 1, true);
+            qi.qrDraw(`https://hclind.github.io/p300/?p=${i}`, 170, 256, "M", 1, true);
         // if (rr != 0) qi.qrDraw(`https://www.google.com/search?q=${poems[i].詩名}`,172,260,"L",1,true);
         qi.data2canvas();
         let id = i.toString();
@@ -103,5 +106,5 @@ async function test() {
     }
 }
 qi.loadfont('./public/LXGWWenKaiTC-Regular.ttf', '繁體');
-console.log(JSON.stringify(poems.map(d => d.詩名)));
-// test();
+// console.log(JSON.stringify(poems.map(d=>d.詩名)));
+test();
